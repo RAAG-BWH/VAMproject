@@ -27,7 +27,8 @@
         </div> -->
         <form id="uploadForm" enctype="multipart/form-data" method="post">
             <button id="VoxelButton" type="submit">Voxel STL</button>
-            <input type="file" id="file-upload" accept=".stl" name='stl'/>
+            <input type="file" id="file-upload" accept=".stl" name='stl'/><br/>
+            <input type="range" id="resolution" min="2" max="500" style="display: inline-block;"><p style="display: inline-block; color: white;" id="res-value"></p>
         </form>
         <script>
             // var container = document.getElementById('model-container'); // Corrected container ID
@@ -80,6 +81,10 @@
             //     }
             // };
             // xhr.send();
+            document.getElementById("resolution").addEventListener("change", e => {
+                console.log(e.target.value)
+                document.getElementById("res-value").innerHTML =  `${e.target.value}`;
+            })
 
             document.getElementById('uploadForm').addEventListener('submit', function(event) {
                 event.preventDefault(); 
@@ -89,7 +94,8 @@
 
                 var formData = new FormData(); // Crear un objeto FormData
                 formData.append('file-upload', file); // Adjuntar el archivo al objeto FormData
-
+                formData.append("resolution", document.getElementById("resolution").value)
+                console.log(formData, document.getElementById("resolution").value)
                 // Crear una nueva solicitud XMLHttpRequest
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', 'http://127.0.0.1:8000/home/', true); // Configurar la solicitud POST y la URL del backend

@@ -53,28 +53,28 @@ def myview(request):
         with open(file_path, 'wb') as destination:
             for chunk in request.FILES['file-upload'].chunks():
                 destination.write(chunk)
-        
-        target_geo = vam.geometry.TargetGeometry(stlfilename=file_path, resolution=50)
+
+        target_geo = vam.geometry.TargetGeometry(stlfilename=file_path, resolution=int(request.POST["resolution"]))
         os.remove(file_path)
         # print("\n\n\nvam.geometry.TargetGeometry done")
         # print("=====================================")
         # print("=====================================")
         # print("=====================================\n\n\n")
-        # num_angles = 360
-        # angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
-        # proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
+        num_angles = 360
+        angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
+        proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
         
         # print("\n\n\nvam.geometry.ProjectionGeometry done")
         # print("=====================================")
         # print("=====================================")
         # print("=====================================\n\n\n")
-        # optimizer_params = vam.optimize.Options(method='PM',n_iter=20,d_h=0.85,d_l=0.6,filter='hamming')
+        optimizer_params = vam.optimize.Options(method='PM',n_iter=20,d_h=0.85,d_l=0.6,filter='hamming')
         
         # print("\n\n\nvam.optimize.Options done")
         # print("=====================================")
         # print("=====================================")
         # print("=====================================\n\n\n")
-        # opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
+        opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
         # print("llego")
         # print("\n\n\n=====================================")
         # print("=====================================")
