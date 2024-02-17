@@ -92,36 +92,31 @@
                 var fileInput = document.getElementById('file-upload');
                 var file = fileInput.files[0];
 
-                var formData = new FormData(); // Crear un objeto FormData
-                formData.append('file-upload', file); // Adjuntar el archivo al objeto FormData
+                var formData = new FormData();
+                formData.append('file-upload', file); 
                 formData.append("resolution", document.getElementById("resolution").value)
                 console.log(formData, document.getElementById("resolution").value)
-                // Crear una nueva solicitud XMLHttpRequest
+                
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'http://127.0.0.1:8000/home/', true); // Configurar la solicitud POST y la URL del backend
+                xhr.open('POST', 'http://127.0.0.1:8000/home/', true); 
 
-                // Configurar el encabezado para incluir el token CSRF
+                
                 xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
 
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         console.log('Archivo subido correctamente');
                         var response = JSON.parse(xhr.responseText);
-                        console.log(response); // Puedes imprimir la respuesta JSON en la consola para verla
+                        console.log(response); 
                         document.getElementById("threed").setAttribute("url", "embryo.x3d")
-                        // Por ejemplo, puedes mostrar los datos en un modal
-                        // Manejar la respuesta del backend si es necesario
                     } else {
                         console.error('Error al subir el archivo:', xhr.responseText);
-                        // Manejar errores si es necesario
                     }
                 };
 
-                // Enviar la solicitud con los datos del formulario
                 xhr.send(formData);
             });
 
-            // Función para obtener el token CSRF de las cookies
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie !== '') {

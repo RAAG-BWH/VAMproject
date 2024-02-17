@@ -10,7 +10,6 @@ from vedo import dataurl, Plotter, Volume, Text3D
 import os
 
 def export_window(fileoutput, binary=False, plt=None):
-    print("holiiiaaauuaaaa")
     try:
         os.remove("embryo.x3d")
     except:
@@ -49,7 +48,6 @@ def myview(request):
         #target_geo = vam.geometry.TargetGeometry(stlfilename=f"VAMapp/static/{request.FILES['file-upload']}", resolution=15)
         file_path = 'VAMapp/static/{}.stl'.format("a")
                 
-        # Guarda el archivo STL en la ruta especificada
         with open(file_path, 'wb') as destination:
             for chunk in request.FILES['file-upload'].chunks():
                 destination.write(chunk)
