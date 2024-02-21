@@ -57,34 +57,61 @@ document.getElementById("resolution").addEventListener("change", e => {
 document.getElementById('uploadForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    var fileInput = document.getElementById('file-upload');
-    var file = fileInput.files[0];
 
-    var formData = new FormData();
-    formData.append('file-upload', file);
-    formData.append("resolution", document.getElementById("resolution").value)
-    console.log(formData, document.getElementById("resolution").value)
+    fetch('/check_access/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({}),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.allowed) {
+                // User is allowed to perform the action
+                var fileInput = document.getElementById('file-upload');
+                var file = fileInput.files[0];
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://127.0.0.1:8000/home/', true);
+                if (typeof (file) === "undefined" || typeof (file) === null) {
+                    alert("Please select a file to upload.")
+                    return
+                }
+
+                var formData = new FormData();
+                formData.append('file-upload', file);
+                formData.append("resolution", document.getElementById("resolution").value)
+                console.log(formData, document.getElementById("resolution").value)
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://127.0.0.1:8000/home/', true);
 
 
-    xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
 
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            console.log('Archivo subido correctamente');
-            var response = JSON.parse(xhr.responseText);
-            console.log(response);
-            document.getElementById("threed").setAttribute("url", "embryo.x3d")
-        } else {
-            console.error('Error al subir el archivo:', xhr.responseText);
-        }
-    };
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        console.log('Archivo subido correctamente');
+                        var response = JSON.parse(xhr.responseText);
+                        console.log(response);
+                        document.getElementById("threed").setAttribute("url", "embryo.x3d")
+                    } else {
+                        console.error('Error al subir el archivo:', xhr.responseText);
+                    }
+                };
 
-    xhr.send(formData);
+                xhr.send(formData);
+            } else {
+                // User is not allowed
+                alert("Access denied, processing limit exceeded. Please wait 24 hours to try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 });
 
+// function to get the CSRF token from django
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {

@@ -1,13 +1,14 @@
+from datetime import datetime, timedelta
 from django.http import HttpResponse, FileResponse
 from django.shortcuts import render
 from django.http import JsonResponse
-import vamtoolbox as vam
-import vedo.vtkclasses as vtki
-import time
+from .models import User
 import numpy as np
-import vedo
-from vedo import dataurl, Plotter, Volume, Text3D
 import os
+import vamtoolbox as vam
+import vedo
+import vedo.vtkclasses as vtki
+from vedo import dataurl, Plotter, Volume, Text3D
 
 def export_window(fileoutput, binary=False, plt=None):
     try:
@@ -135,3 +136,13 @@ def voxel(request):
     print("procedimiento terminado")
     
     return HttpResponse({"hola": "hola"})
+
+# /check_access function to determine if the user is allowed to submit a file
+def check_access(request):
+    allowed = False
+
+
+
+    
+
+    return JsonResponse({'allowed': allowed})
