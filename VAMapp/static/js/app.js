@@ -57,6 +57,13 @@ document.getElementById("resolution").addEventListener("change", e => {
 document.getElementById('uploadForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
+    var fileInput = document.getElementById('file-upload');
+    var file = fileInput.files[0];
+
+    if (typeof (file) === "undefined" || typeof (file) === null) {
+        alert("Please select a file to upload.")
+        return
+    }
 
     fetch('/check_access/', {
         method: 'POST',
@@ -70,13 +77,6 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
         .then(data => {
             if (data.allowed) {
                 // User is allowed to perform the action
-                var fileInput = document.getElementById('file-upload');
-                var file = fileInput.files[0];
-
-                if (typeof (file) === "undefined" || typeof (file) === null) {
-                    alert("Please select a file to upload.")
-                    return
-                }
 
                 var formData = new FormData();
                 formData.append('file-upload', file);

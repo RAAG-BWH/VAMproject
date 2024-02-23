@@ -1,4 +1,4 @@
-name: Astra_VAM_Django_env
+name: Astra_VAM_django_env
 channels:
   - pytorch
   - numba
@@ -242,11 +242,15 @@ dependencies:
   - zstd=1.4.9=h19a0ad4_0
   - pip:
       - asgiref==3.7.2
+      - datetime==5.4
       - django-cors-headers==4.3.1
+      - django-crontab==0.7.1
       - numpy-stl==3.1.1
       - python-utils==3.8.2
+      - pytz==2024.1
       - torchaudio==2.0.2
       - torchvision==0.15.2
       - git+https://github.com/computed-axial-lithography/VAMToolbox.git
       - vedo==2023.5.0
-prefix: C:\Users\RAAG0206\anaconda3\envs\Astra_VAM_Django_env
+      - zope-interface==6.2
+prefix: C:\Users\eduaa\anaconda3\envs\Astra_VAM_django_env
