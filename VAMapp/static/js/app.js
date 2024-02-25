@@ -69,7 +69,7 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
+            'X-CSRFToken': window.csrfToken
         },
         body: JSON.stringify({}),
     })
@@ -87,7 +87,7 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
                 xhr.open('POST', 'http://127.0.0.1:8000/home/', true);
 
 
-                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                xhr.setRequestHeader('X-CSRFToken', window.csrfToken);
 
                 xhr.onload = function () {
                     if (xhr.status === 200) {
@@ -110,19 +110,3 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
             console.error('Error:', error);
         });
 });
-
-// function to get the CSRF token from django
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}

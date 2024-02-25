@@ -34,6 +34,12 @@
             <p style="display: inline-block; color: white;" id="res-value"></p>
         </form>
     </div>
+
+    <!-- django CSRF token configuration -->
+    {% csrf_token %}
+    <script>
+        window.csrfToken = "{{ csrf_token }}";
+    </script>
     <script type="module" src="{% static '/js/app.js' %}"></script>
 </body>
 
