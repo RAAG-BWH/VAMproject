@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_crontab",
     "VAMapp"
 ]
 
@@ -85,6 +86,11 @@ DATABASES = {
     }
 }
 
+# cronjobs
+# ("*/1 * * * *", "VAMapp.cron.clean_blacklist", ">> ~/Documents/VAMproject/file_crontab.log")
+CRONJOBS = [
+    ("0 0 * * *", "VAMapp.cron.clean_blacklist")
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

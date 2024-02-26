@@ -1,13 +1,13 @@
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 from django.shortcuts import render
-from django.http import JsonResponse
-import vamtoolbox as vam
-import vedo.vtkclasses as vtki
-import time
+from django.utils import timezone
+from .models import User
 import numpy as np
-import vedo
-from vedo import dataurl, Plotter, Volume, Text3D
 import os
+import vamtoolbox as vam
+import vedo
+import vedo.vtkclasses as vtki
+from vedo import dataurl, Plotter, Volume, Text3D
 
 def export_window(fileoutput, binary=False, plt=None):
     try:
@@ -135,3 +135,111 @@ def voxel(request):
     print("procedimiento terminado")
     
     return HttpResponse({"hola": "hola"})
+
+# /check_access function to determine if the user is allowed to submit a file
+def check_access(request):
+    allowed = False
+    CONNECTIONS_ALLOWED = 2
+
+    user_agent = request.META.get('HTTP_USER_AGENT')
+    ip_address = request.META.get('REMOTE_ADDR')
+    agent_users = User.objects.filter(user_agent=user_agent)
+    ip_users = User.objects.filter(ip_address=ip_address)
+
+    print(user_agent)
+    print(ip_address)
+    print(type(agent_users))
+    print(type(ip_users))
+    # print(agent_users)
+    # print(ip_users)
+    # print(len(agent_users) == 0)
+    # print(len(ip_users) == 0)
+
+    """
+    Some results might have the same ip address but different user agents, for example 2 users
+    from the same network but using different devices (users in house, company, etc). So we need
+    to check all the ip address if they have the user's ip address, as well as the user agent.
+    """
+    
+
+    if len(ip_users) > 0 and len(agent_users) == 0:
+        # at least one register of the user's ip address and none of the user agent
+        max_connections = max([user.n_connections for user in ip_users])
+        for user in ip_users:
+            if user.n_connections < CONNECTIONS_ALLOWED:
+                user.n_connections += 1
+                user.last_date_connected = timezone.now()
+                user.save()
+        if max_connections < CONNECTIONS_ALLOWED: 
+            allowed = True
+        print("======================================")
+        print("======================================")
+        print("======================================")
+        print(">0 ips and 0 agents")
+        print("======================================")
+        print("======================================")
+        print("======================================")
+    elif len(ip_users) == 0 and len(agent_users) > 0:
+        # at least one register of the user's user agent and none of the user's ip address
+        max_connections = max([user.n_connections for user in agent_users])
+        for user in agent_users:
+            if user.n_connections < CONNECTIONS_ALLOWED:
+                user.n_connections += 1
+                user.last_date_connected = timezone.now()
+                user.save()
+        if max_connections < CONNECTIONS_ALLOWED: 
+            allowed = True
+        print("======================================")
+        print("======================================")
+        print("======================================")
+        print("0 ips and >0 agents")
+        print("======================================")
+        print("======================================")
+        print("======================================")
+    elif len(ip_users) > 0 and len(agent_users) > 0:
+        # at least one register of the user's ip address and the user's user agent
+        unique_agent_users = set(agent_users)
+        unique_ip_users = set(ip_users)
+        unique_users = unique_agent_users.union(unique_ip_users)
+        max_connections = max([user.n_connections for user in unique_users])
+        for user in unique_users:
+           if user.n_connections < CONNECTIONS_ALLOWED:
+               user.n_connections += 1
+               user.last_date_connected = timezone.now()
+               user.save()
+        if max_connections < CONNECTIONS_ALLOWED:
+            allowed = True
+        print("======================================")
+        print("======================================")
+        print("======================================")
+        print(">0 ips and >0 agents")
+        print("======================================")
+        print("======================================")
+        print("======================================")
+    elif len(ip_users) == 0 and len(agent_users) == 0:
+        # no register of the user's ip address and the user's user agent (create a new register)
+        allowed = True
+
+        date = timezone.now()
+        print(date)
+        print(type(date))
+
+        
+        new_obj = User.objects.create(
+            user_agent=user_agent,
+            ip_address=ip_address,
+            n_connections=1,
+            last_date_connected=date
+        )
+        new_obj.save()
+        
+        
+        print("======================================")
+        print("======================================")
+        print("======================================")
+        print("0 ips and 0 agents")
+        print("======================================")
+        print("======================================")
+        print("======================================")
+
+    return JsonResponse({'allowed': allowed})
