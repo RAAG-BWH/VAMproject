@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from django.http import HttpResponse, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
@@ -221,25 +220,7 @@ def check_access(request):
         # no register of the user's ip address and the user's user agent (create a new register)
         allowed = True
 
-        # format the datetime object to include only the date, hour, and minute
-        # current_datetime = datetime.now()
-        # formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M")
-
-        """
-        desired_datetime = datetime(
-            year=current_datetime.year,
-            month=current_datetime.month,
-            day=current_datetime.day,
-            hour=current_datetime.hour,
-            minute=current_datetime.minute
-        )
-        timezone_aware_datetime = timezone.make_aware(desired_datetime)
-        print(timezone_aware_datetime)
-        print(type(timezone_aware_datetime))
-        """
-
         date = timezone.now()
-        # date = datetime(2015, 10, 9, 23, 55, 59, 342380) 
         print(date)
         print(type(date))
 

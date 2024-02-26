@@ -103,7 +103,7 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
                 xhr.send(formData);
             } else {
                 // User is not allowed
-                alert("Access denied, processing limit exceeded. Please wait 24 hours to try again.");
+                alert("Access denied, processing limit exceeded. Please wait 48 hours to try again.");
             }
         })
         .catch(error => {
