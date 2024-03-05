@@ -29,9 +29,10 @@
         </div> -->
         <form id="uploadForm" enctype="multipart/form-data" method="post">
             <button id="VoxelButton" type="submit">Voxel STL</button>
-            <input type="file" id="file-upload" accept=".stl" name='stl' /><br />
+            <input type="file" id="file-upload" accept=".stl" name="stl" onchange="validateFileSize()" /><br />
             <input type="range" id="resolution" min="2" max="500" style="display: inline-block;">
             <p style="display: inline-block; color: white;" id="res-value"></p>
+            {{ form.captcha }}
         </form>
     </div>
 
@@ -40,7 +41,7 @@
     <script>
         window.csrfToken = "{{ csrf_token }}";
     </script>
-    <script type="module" src="{% static '/js/app.js' %}"></script>
+    <script src="{% static '/js/app.js' %}"></script>
 </body>
 
 </html>

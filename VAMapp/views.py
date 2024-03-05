@@ -9,6 +9,8 @@ import vedo
 import vedo.vtkclasses as vtki
 from vedo import dataurl, Plotter, Volume, Text3D
 
+from .forms import CaptchaForm
+
 def export_window(fileoutput, binary=False, plt=None):
     try:
         os.remove("embryo.x3d")
@@ -88,7 +90,9 @@ def myview(request):
         print("Type: \n firefox embryo.html")
         return JsonResponse({"Siiii": "Nooo"})
     else:
-        return render(request, "index.html")
+        form = CaptchaForm()
+        context = {"form": form}
+        return render(request, "index.html", context)
 
 def threeD(request):
     return FileResponse(open("embryo.x3d", 'rb'), content_type='model/x3d+xml')

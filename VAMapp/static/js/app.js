@@ -49,15 +49,26 @@
 // };
 // xhr.send();
 
+function validateFileSize() {
+    var input = document.getElementById("file-upload");
+    var fileSize = input.files[0].size;
+    var maxSize = 1000000 // size in bytes
+
+    if (fileSize > maxSize) {
+        alert("File size exceeds the limit. Please choose a smaller file.")
+        input.value = ""
+    }
+}
+
 document.getElementById("resolution").addEventListener("change", e => {
     console.log(e.target.value)
     document.getElementById("res-value").innerHTML = `${e.target.value}`;
 })
 
-document.getElementById('uploadForm').addEventListener('submit', function (event) {
+document.getElementById("uploadForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
-    var fileInput = document.getElementById('file-upload');
+    var fileInput = document.getElementById("file-upload");
     var file = fileInput.files[0];
 
     if (typeof (file) === "undefined" || typeof (file) === null) {
@@ -65,11 +76,19 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
         return
     }
 
-    fetch('/check_access/', {
-        method: 'POST',
+    // Prevent form submission if CAPTCHA is not completed
+    var captchaResponse = grecaptcha.getResponse();
+    if (captchaResponse.length == 0) {
+        event.preventDefault();
+        alert("Please complete the CAPTCHA.");
+        return
+    }
+
+    fetch("/check_access/", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': window.csrfToken
+            "Content-Type": "application/json",
+            "X-CSRFToken": window.csrfToken
         },
         body: JSON.stringify({}),
     })
@@ -85,7 +104,6 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', 'http://127.0.0.1:8000/home/', true);
-
 
                 xhr.setRequestHeader('X-CSRFToken', window.csrfToken);
 
