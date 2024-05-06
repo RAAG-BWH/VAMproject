@@ -56,31 +56,34 @@ def myview(request):
 
         target_geo = vam.geometry.TargetGeometry(stlfilename=file_path, resolution=int(request.POST["resolution"]))
         os.remove(file_path)
-        # print("\n\n\nvam.geometry.TargetGeometry done")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================\n\n\n")
+        print("\n\n\nvam.geometry.TargetGeometry done")
+        print("=====================================")
+        print("=====================================")
+        print("=====================================\n\n\n")
         num_angles = 360
         angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
         proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
         
-        # print("\n\n\nvam.geometry.ProjectionGeometry done")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================\n\n\n")
-        optimizer_params = vam.optimize.Options(method='PM',n_iter=20,d_h=0.85,d_l=0.6,filter='hamming')
-        
-        # print("\n\n\nvam.optimize.Options done")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================\n\n\n")
+        print("\n\n\nvam.geometry.ProjectionGeometry done")
+        print("=====================================")
+        print("=====================================")
+        print("=====================================\n\n\n")
+        optimizer_params = vam.optimize.Options(method='PM',n_iter=50,d_h=0.85,d_l=0.6,filter='hamming')
+    
+        print("\n\n\nvam.optimize.Options done")
+        print("=====================================")
+        print("=====================================")
+        print("=====================================\n\n\n")
         opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
-        # print("llego")
-        # print("\n\n\n=====================================")
-        # print("=====================================")
-        # print("=====================================\n\n\n")
-        # print("Svam.optimize.optimize done")
-        # print("\n\n\nprocedimiento terminado\n\n\n")
+        print("llego")
+        print("\n\n\n=====================================")
+        print("=====================================")
+        print("=====================================\n\n\n")
+        print("Svam.optimize.optimize done")
+        print("\n\n\nprocedimiento terminado\n\n\n")
+        print("================================ Made with <3 by Armando, Eduardo and Rodrigo (and Emilio) =======================================================")
+        print(opt_sino.array.shape, opt_recon.array.shape , error.shape)
+        
         plt = Plotter(size=(400,300), bg='black', axes=3)
         embryo = Volume(target_geo.array).legosurface(vmin=0.5,vmax=1.5)
         plt.render(resetcam=True)
@@ -88,7 +91,7 @@ def myview(request):
         
         export_window('embryo.x3d', binary=False)
         print("Type: \n firefox embryo.html")
-        return JsonResponse({"Siiii": "Nooo"})
+        return JsonResponse({"Siiii": "Nooo"}) #### ???
     else:
         form = CaptchaForm()
         context = {"form": form}
@@ -113,7 +116,7 @@ def voxel(request):
     print("=====================================")
     # 250 is the original resolution
     # 125 is another resolution that goes further
-    target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/file.stl", resolution=8)
+    target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/file.stl", resolution=250)
     print("vam.geometry.TargetGeometry done")
     print("=====================================")
     print("=====================================")
@@ -125,7 +128,7 @@ def voxel(request):
     print("=====================================")
     print("=====================================")
     print("=====================================")
-    optimizer_params = vam.optimize.Options(method='PM',n_iter=20,d_h=0.85,d_l=0.6,filter='hamming')
+    optimizer_params = vam.optimize.Options(method='PM',n_iter=50,d_h=0.85,d_l=0.6,filter='hamming')
     print("vam.optimize.Options done")
     print("=====================================")
     print("=====================================")
@@ -135,7 +138,7 @@ def voxel(request):
     print("=====================================")
     print("=====================================")
     print("Svam.optimize.optimize done")
-    print(opt_sino, opt_recon, error)
+    print(opt_sino.array.shape, opt_recon.array.shape , error.shape)
     print("procedimiento terminado")
     
     return HttpResponse({"hola": "hola"})
