@@ -103,7 +103,7 @@ dependencies:
       - triton==2.2.0
       - typing-extensions==4.11.0
       - urllib3==2.2.1
-      - vamtoolbox==2.0.0
+      - git+https://github.com/computed-axial-lithography/VAMToolbox.git
       - vedo==2024.5.1
       - vtk==9.3.0
 prefix: /opt/conda/envs/VAMenv2
