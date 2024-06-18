@@ -1,19 +1,27 @@
+<!-- 
+    Made with <3 by:
+    - Armando "Patines" Martínez
+    - Rodrigo 
+    - Eduardo de Valle
+-->
+
 <!DOCTYPE html>
 {% load static %}
 <html>
 
 <head>
-    <title>Shrike Lab</title>
+    <title>VAMProject</title>
     <script src='https://www.x3dom.org/download/x3dom.js'> </script>
     <!-- <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/> -->
-    <link rel="stylesheet" type="text/css" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'assets/shrike_logo.png' %}">
 </head>
 
 <body>
     <div class="header">
-        <img id="header-image2" src="{% static '/resources/harvard_bwh.png' %}" alt="Logo1">
+        <img id="header-image2" src="{% static 'assets/harvard_bwh.png' %}" alt="Harvard BWH logo">
         <h1>Volumetric Bioprinting</h1>
-        <img id="header-image1" src="{% static '/resources/shrike_logo.png' %}" alt="Logo2">
+        <img id="header-image1" src="{% static 'assets/shrike_logo.png' %}" alt="Shrike Zhang Laboratory logo">
     </div>
     <div class="x3d-container">
         <x3d width='800px' height='600px' class="canvas_three_d">

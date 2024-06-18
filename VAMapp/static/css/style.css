@@ -1,11 +1,11 @@
 body {
+    background-image: url("../assets/IMG_0022.JPG");
     margin: 0;
     padding: 0;
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
-    background-image: url("resources/IMG_0022.JPG");
 }
 
 h1 {
