@@ -17,8 +17,9 @@ document.getElementById("resolution").addEventListener("change", e => {
 document.getElementById("uploadForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
-    var fileInput = document.getElementById("file-upload");
-    var file = fileInput.files[0];
+    var formData = new FormData();
+    formData.append('stl', document.getElementById('file-upload').files[0]);
+    formData.append('resolution', document.getElementById('resolution').value);
 
     if (typeof (file) === "undefined" || typeof (file) === null) {
         alert("Please select a file to upload.")
@@ -39,17 +40,12 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
             "Content-Type": "application/json",
             "X-CSRFToken": window.csrfToken
         },
-        body: JSON.stringify({}),
+        body: formData
     })
         .then(response => response.json())
         .then(data => {
             if (data.allowed) {
                 // User is allowed to perform the action
-
-                var formData = new FormData();
-                formData.append('file-upload', file);
-                formData.append("resolution", document.getElementById("resolution").value)
-                console.log(formData, document.getElementById("resolution").value)
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', 'http://127.0.0.1:8000/home/', true);

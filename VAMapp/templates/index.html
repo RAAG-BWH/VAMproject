@@ -38,8 +38,9 @@
         <form id="uploadForm" enctype="multipart/form-data" method="post">
             <button id="VoxelButton" type="submit">Voxel STL</button>
             <input type="file" id="file-upload" accept=".stl" name="stl" onchange="validateFileSize()" /><br />
+            <p style="color: white;">Resolution</p>
             <input type="range" id="resolution" min="2" max="500" style="display: inline-block;">
-            <p style="display: inline-block; color: white;" id="res-value"></p>
+            <p style="display: inline-block; color: white;" id="res-value">250</p>
             {{ form.captcha }}
         </form>
     </div>
