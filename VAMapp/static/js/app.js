@@ -40,30 +40,28 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
             "Content-Type": "application/json",
             "X-CSRFToken": window.csrfToken
         },
-        body: formData
+        body: JSON.stringify({})
     })
         .then(response => response.json())
         .then(data => {
             if (data.allowed) {
                 // User is allowed to perform the action
 
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'http://127.0.0.1:8000/home/', true);
-
-                xhr.setRequestHeader('X-CSRFToken', window.csrfToken);
-
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        console.log('File submitted');
-                        var response = JSON.parse(xhr.responseText);
-                        console.log(response);
-                        document.getElementById("threed").setAttribute("url", "embryo.x3d")
-                    } else {
-                        console.error('Error when submitting the file:', xhr.responseText);
-                    }
-                };
-
-                xhr.send(formData);
+                fetch("/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": window.csrfToken
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(responseData => {
+                    document.getElementById("threed").setAttribute("url", "embryo.x3d");
+                })
+                .catch(error => {
+                    alert("Error when submitting the file:");
+                });
             } else {
                 // User is not allowed
                 alert("Access denied, processing limit exceeded. Please wait 48 hours to try again.");
