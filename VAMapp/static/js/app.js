@@ -18,10 +18,10 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
     event.preventDefault();
 
     var formData = new FormData();
-    formData.append('stl', document.getElementById('file-upload').files[0]);
-    formData.append('resolution', document.getElementById('resolution').value);
+    formData.append("stl", document.getElementById("file-upload").files[0]);
+    formData.append("resolution", document.getElementById("resolution").value);
 
-    if (typeof (file) === "undefined" || typeof (file) === null) {
+    if (typeof (formData.get("stl")) === "undefined" || typeof (formData.get("stl")) === null) {
         alert("Please select a file to upload.")
         return
     }
@@ -40,7 +40,7 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
             "Content-Type": "application/json",
             "X-CSRFToken": window.csrfToken
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
     })
         .then(response => response.json())
         .then(data => {
@@ -50,7 +50,6 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
                 fetch("/", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         "X-CSRFToken": window.csrfToken
                     },
                     body: formData

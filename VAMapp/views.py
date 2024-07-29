@@ -9,6 +9,8 @@ import vedo
 import vedo.vtkclasses as vtki
 from vedo import dataurl, Plotter, Volume, Text3D
 
+import tempfile
+
 from .forms import CaptchaForm
 
 # /
@@ -24,7 +26,18 @@ def main_view(request):
         print("=====================================")
         # 250 is the original resolution
         # 125 is another resolution that goes further
-        target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/file.stl", resolution=250)
+        file = request.FILES.get("stl")
+        resolution = request.POST.get("resolution")
+        # target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/file.stl", resolution=250)
+        
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.stl') as temp_file:
+            for chunk in file.chunks():
+                temp_file.write(chunk)
+            temp_file_path = temp_file.name
+
+        # replace the default file with the variable `temp_file_path`
+        target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/a.stl", resolution=resolution)
         print("vam.geometry.TargetGeometry done")
         print("=====================================")
         print("=====================================")
@@ -48,6 +61,9 @@ def main_view(request):
         print("Svam.optimize.optimize done")
         print(opt_sino.array.shape, opt_recon.array.shape , error.shape)
         print("Processing finished")
+
+        # Clean up the temporary file
+        os.remove(temp_file_path)
         
         return HttpResponse({"hola": "hola"})
     else:
