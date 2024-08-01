@@ -1,6 +1,6 @@
 <!-- 
     Made with <3 by:
-    - Armando "Patines" Martínez
+    - Armando Patines Martínez
     - Rodrigo 
     - Eduardo de Valle
 -->
@@ -12,7 +12,7 @@
 <head>
     <title>VAMProject</title>
     <script src='https://www.x3dom.org/download/x3dom.js'> </script>
-    <!-- <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/> -->
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'assets/shrike_logo.png' %}">
 </head>
@@ -25,8 +25,8 @@
     </div>
     <div class="x3d-container">
         <x3d width='800px' height='600px' class="canvas_three_d">
-            <scene>
-                <!-- <Inline url="embryo.x3d" id="threed"> </Inline> -->
+            <scene id="threed-scene">
+                <Inline url="{% static 'embryo.x3d' %}" id="threed"> </Inline>
             </scene>
         </x3d>
     </div>
@@ -45,7 +45,7 @@
                 </div>
                 <input type="range" id="resolution" min="2" max="500" style="display: inline-block; margin-bottom: 20px; width: 80%;">
             </div>
-            {{ form.captcha }}
+            <!-- {{ form.captcha }} -->
         </form>
     </div>
 

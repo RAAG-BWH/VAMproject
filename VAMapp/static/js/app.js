@@ -27,12 +27,14 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
     }
 
     // Prevent form submission if CAPTCHA is not completed
+    /*
     var captchaResponse = grecaptcha.getResponse();
     if (captchaResponse.length == 0) {
         event.preventDefault();
         alert("Please complete the CAPTCHA.");
         return
     }
+    */ 
 
     fetch("/check_access/", {
         method: "POST",
@@ -56,10 +58,27 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
                 })
                 .then(response => response.json())
                 .then(responseData => {
-                    document.getElementById("threed").setAttribute("url", "embryo.x3d");
+                    const scene = document.getElementById("threed-scene");
+
+                    // Clear the current content of the scene
+                    while (scene.firstChild) {
+                        scene.removeChild(scene.firstChild);
+                    }
+
+                    // Parse the X3D content
+                    const parser = new DOMParser();
+                    const x3dDocument = parser.parseFromString(responseData.x3d_content, "application/xml");
+
+                    // Append all child nodes to the scene
+                    Array.from(x3dDocument.documentElement.childNodes).forEach(node => {
+                        scene.appendChild(document.importNode(node, true));
+                    });
+
+                    console.log("X3D content processed and displayed.");
                 })
                 .catch(error => {
                     alert("Error when submitting the file:");
+                    console.log(error);
                 });
             } else {
                 // User is not allowed

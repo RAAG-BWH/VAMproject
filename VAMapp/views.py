@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
+import io
 from .models import User
 import numpy as np
 import os
@@ -8,10 +9,36 @@ import vamtoolbox as vam
 import vedo
 import vedo.vtkclasses as vtki
 from vedo import dataurl, Plotter, Volume, Text3D
+import vedo.settings as vedo_settings
+import vtk
 
 import tempfile
 
+from django.conf import settings
+
 from .forms import CaptchaForm
+
+def generate_x3d_content(plt, binary=False):
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".x3d")
+    temp_file.close()
+
+    exporter = vtk.vtkX3DExporter()
+    exporter.SetBinary(binary)
+    exporter.FastestOff()
+    exporter.SetInput(plt.window)
+    exporter.SetFileName(temp_file.name)
+    exporter.Update()
+    exporter.Write()
+
+    # Read the X3D content from the temporary file
+    with open(temp_file.name, 'r') as file:
+        x3d_content = file.read()
+
+    # Remove the temporary file
+    os.remove(temp_file.name)
+
+    return x3d_content
 
 # /
 def main_view(request):
@@ -20,10 +47,10 @@ def main_view(request):
         context = {"form": form}
         return render(request, "index.html", context)
     elif request.method == "POST":
-        print("Starting slicing")
-        print("=====================================")
-        print("=====================================")
-        print("=====================================")
+        # print("Starting slicing")
+        # print("=====================================")
+        # print("=====================================")
+        # print("=====================================")
         # 250 is the original resolution
         # 125 is another resolution that goes further
         file = request.FILES.get("stl")
@@ -37,35 +64,47 @@ def main_view(request):
             temp_file_path = temp_file.name
 
         # replace the default file with the variable `temp_file_path`
-        target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/a.stl", resolution=resolution)
-        print("vam.geometry.TargetGeometry done")
-        print("=====================================")
-        print("=====================================")
-        print("=====================================")
-        num_angles = 360
-        angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
-        proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
-        print("vam.geometry.ProjectionGeometry done")
-        print("=====================================")
-        print("=====================================")
-        print("=====================================")
-        optimizer_params = vam.optimize.Options(method='PM',n_iter=50,d_h=0.85,d_l=0.6,filter='hamming')
-        print("vam.optimize.Options done")
-        print("=====================================")
-        print("=====================================")
-        print("=====================================")
-        opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
-        print("=====================================")
-        print("=====================================")
-        print("=====================================")
-        print("Svam.optimize.optimize done")
-        print(opt_sino.array.shape, opt_recon.array.shape , error.shape)
-        print("Processing finished")
+        # target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/a.stl", resolution=resolution)
+        # print("vam.geometry.TargetGeometry done")
+        # print("=====================================")
+        # print("=====================================")
+        # print("=====================================")
+        # num_angles = 360
+        # angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
+        # proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
+        # print("vam.geometry.ProjectionGeometry done")
+        # print("=====================================")
+        # print("=====================================")
+        # print("=====================================")
+        # optimizer_params = vam.optimize.Options(method='PM',n_iter=50,d_h=0.85,d_l=0.6,filter='hamming')
+        # print("vam.optimize.Options done")
+        # print("=====================================")
+        # print("=====================================")
+        # print("=====================================")
+        # opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
+        # print("=====================================")
+        # print("=====================================")
+        # print("=====================================")
+        # print("Svam.optimize.optimize done")
+        # print(opt_sino.array.shape, opt_recon.array.shape , error.shape)
+        # print("Processing finished")
 
         # Clean up the temporary file
-        os.remove(temp_file_path)
+        # os.remove(temp_file_path)
+
+        file_path = os.path.join(settings.BASE_DIR, 'VAMapp', 'static', 'assets', 'target_geo_array.npy')
+        target_geo = np.load(file_path)
+
+        plt = Plotter(size=(400, 300), bg='black', axes=3)
+        embryo = Volume(target_geo).legosurface(vmin=0.5, vmax=1.5)
+        plt.add(embryo)
+
+        x3d_content = generate_x3d_content(plt, binary=False)
+
+        print(type(x3d_content))
+        print(x3d_content[41:100])
         
-        return HttpResponse({"hola": "hola"})
+        return JsonResponse({"status": "Success", "x3d_content": x3d_content})
     else:
         return HttpResponseNotFound('<h1>Page not found</h1>')
 
