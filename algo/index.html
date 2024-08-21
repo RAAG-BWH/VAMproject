@@ -1,0 +1,147 @@
+<!-- 
+    Made with <3 by:
+    - Armando Patines Martínez
+    - Rodrigo 
+    - Eduardo de Valle
+-->
+
+<!DOCTYPE html>
+<!-- {% load static %} -->
+<html>
+
+<head>
+    <title>VAMProject</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"> -->
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <!-- <link rel="icon" href="{% static 'assets/shrike_logo.png' %}"> -->
+    <link rel="icon" href="./shrike_logo.png">
+</head>
+<body>
+    <header class="main-header">
+        <!-- <img id="header-image2" src="{% static 'assets/harvard_bwh.png' %}" alt="Harvard BWH logo"> -->
+        <img id="header-image2" src="./harvard_bwh.png" alt="Harvard BWH logo">
+        <h1>Volumetric Bioprinting</h1>
+        <!-- <img id="header-image1" src="{% static 'assets/shrike_logo.png' %}" alt="Shrike Zhang Laboratory logo"> -->
+        <img id="header-image1" src="./shrike_logo.png" alt="Shrike Zhang Laboratory logo">
+    </header>
+    <hr>
+    <main>
+        <!-- <x3d width='800px' height='600px'>
+            <scene id="threed-scene">
+                <viewpoint position="-1.94639 1.79771 -2.89271" orientation="0.03886 0.99185 0.12133 3.75685"></viewpoint>
+                <Inline url="{% static 'embryo.x3d' %}" />
+            </scene>
+        </x3d> -->
+        <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model">
+        <article class="form-container">
+            <form id="uploadForm" enctype="multipart/form-data" method="post">
+                <header class="form-header">
+                    <h2>Options</h2>
+                </header>
+                <article class="selectionTabs" id="selectionTabs">
+                    <input type="radio" id="slicing" name="option" value="slicing" checked="true">
+                    <label for="slicing">Slicing</label>
+                    <input type="radio" id="projecting" name="option" value="projecting">
+                    <label for="projecting">Projecting</label>
+                    <input type="radio" id="advanced" name="option" value="advanced">
+                    <label for="advanced">Advanced</label>
+                </article>
+                <article class="form-content first">
+                    <article id="file-input">
+                        <input type="file" id="file-upload" accept=".stl, .sino" name="stl" onchange="validateFileSize()" />
+                        <label for="file-upload" class="custom-file-upload" id="custom-file-upload" title="Upload .stl or .sino file">Upload File 📂</label>
+                        <p style="margin: 0; color: white;" id="nose">No File Selected</p>
+                    </article>
+                    <article id="ranges">
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Resolution:</span>
+                                <span style="display: inline-block; color: white; padding-left: 5px;" id="res-value">250</span>
+                            </div>
+                            <input type="range" id="resolution" min="10" max="500" style="width: 75%;">
+                        </div>
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Contrast Factor:</span>
+                                <span style="display: inline-block; color: white; padding-left: 5px;" id="con-value">25</span>
+                            </div>
+                            <input type="range" id="contrast" min="1" max="50" style="width: 75%;">
+                        </div>
+                    </article>
+                    <article id="submit">
+                        <button id="VoxelButton" type="submit">Slice</button>
+                    </article>
+                </article>
+                <article class="form-content second">
+                    <article id="file-input">
+                        <button id="bluetooth">Pair Device</button>
+                        <select id="parameterType">
+                            <option value="velocity" selected>Velocity</option>
+                            <option value="timePerFrame">Time per frame</option>
+                        </select>
+                        <!-- <p style="margin: 0; color: white;" id="nose">Scale Factor</p> -->                        
+                    </article>
+                    <article id="ranges" class="vel">
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Degrees/s:</span>
+                                <span style="display: inline-block; color: white; padding-left: 5px;" id="vel-value">30</span>
+                            </div>
+                            <input type="range" id="velocity" min="1" max="60" style="width: 75%;">
+                        </div>
+                        <div style="width: 50%; overflow: hidden;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Exposure Time:</span>
+                                <span style="display: inline-block; color: white; padding-left: 5px;" id="exp-value">30</span>
+                            </div>
+                            <input type="range" id="exposure" min="1" max="60" style="width: 75%;">
+                        </div>
+                    </article>
+                    <article id="ranges" class="frame" style="display: none;">
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Time per frame:</span>
+                                <span style="display: inline-block; color: white; padding-left: 5px;" id="tpf-value">500</span>
+                            </div>
+                            <input type="range" id="tpf" min="16.67" max="1000" step="0.01" style="width: 75%;" value="500">
+                        </div>
+                        <div style="width: 50%; overflow: hidden;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Rotations:</span>
+                                <span style="display: inline-block; color: white; padding-left: 5px;" id="rot-value">3</span>
+                            </div>
+                            <input type="range" id="rotations" min="1" max="5" style="width: 75%;" value="3">
+                        </div>
+                    </article>
+                    <article id="submit">
+                        <button id="PrintButton">Print</button>
+                    </article>
+                </article>
+                <article class="form-content third">
+                    <article id="file-input">
+                        <p style="margin: 0; color: white;" id="nose">Image Scaling Factor</p>
+                        <input type="number" max="1" min="0.1" step="0.1" id="resize" value="1"/>
+                    </article>
+                    <article id="buttons">
+                        <button id="download">Download Sinogram</button><br>
+                        <button id="VoxelButton">Apply</button>
+                    </article>
+                </article>
+                <!-- {{ form.captcha }} -->
+            </form>
+        </article>
+    </main>
+
+    <!-- django CSRF token configuration -->
+    <!-- {% csrf_token %} -->
+    <!-- <script>
+        window.csrfToken = "{{ csrf_token }}";
+    </script> -->
+    
+    <!-- <script src="{% static '/js/app.js' %}"></script> -->
+    <script src="./app.js"></script>
+</body>
+</html>

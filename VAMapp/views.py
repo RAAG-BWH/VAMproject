@@ -1,16 +1,13 @@
 from django.http import HttpResponse, HttpResponseNotFound, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
-import io
+
 from .models import User
 import numpy as np
 import os
 import vamtoolbox as vam
-import vedo
-import vedo.vtkclasses as vtki
-from vedo import dataurl, Plotter, Volume, Text3D
-import vedo.settings as vedo_settings
-import vtk
+
+import stl
 
 import tempfile
 
@@ -18,27 +15,24 @@ from django.conf import settings
 
 from .forms import CaptchaForm
 
-def generate_x3d_content(plt, binary=False):
-    # Create a temporary file
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".x3d")
-    temp_file.close()
+from PIL import Image, ImageEnhance
+import base64
+from io import BytesIO
+import uuid
 
-    exporter = vtk.vtkX3DExporter()
-    exporter.SetBinary(binary)
-    exporter.FastestOff()
-    exporter.SetInput(plt.window)
-    exporter.SetFileName(temp_file.name)
-    exporter.Update()
-    exporter.Write()
+from scipy import ndimage
 
-    # Read the X3D content from the temporary file
-    with open(temp_file.name, 'r') as file:
-        x3d_content = file.read()
+opt_sino = ""
 
-    # Remove the temporary file
-    os.remove(temp_file.name)
+def center_stl(input_filename):
+    # stl_mesh = stl.mesh.Mesh.from_file(input_filename)
+    stl_mesh = stl.mesh.Mesh(input_filename)
 
-    return x3d_content
+    centroid = np.mean(stl_mesh.points.reshape(-1, 3), axis=0)
+    
+    stl_mesh.translate(-centroid)
+    
+    return stl_mesh
 
 # /
 def main_view(request):
@@ -47,105 +41,110 @@ def main_view(request):
         context = {"form": form}
         return render(request, "index.html", context)
     elif request.method == "POST":
-        # print("Starting slicing")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================")
-        # 250 is the original resolution
-        # 125 is another resolution that goes further
+        sino_encoded = False
+        id = str(uuid.uuid4())
+        print(f"id: {id}")
         file = request.FILES.get("stl")
-        resolution = request.POST.get("resolution")
-        # target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/file.stl", resolution=250)
+        resolution = request.POST.get("resolution")   
+        contrast = request.POST.get("contrast")  
+        resizeFactor = float(request.POST.get("resize"))  
+
+        nameSplit = file.name.split(".")
         
+        if (nameSplit[-1].lower() == "stl"):
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.stl') as temp_file:
+                for chunk in file.chunks():
+                    temp_file.write(chunk)
+                temp_file_path = temp_file.name
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.stl') as temp_file:
-            for chunk in file.chunks():
-                temp_file.write(chunk)
-            temp_file_path = temp_file.name
+                stl_mesh = stl.mesh.Mesh.from_file(temp_file_path)
+                centroid = np.mean(stl_mesh.points.reshape(-1, 3), axis=0)
+                stl_mesh.translate(-centroid)
+                stl_mesh.save(temp_file_path)
+            
+            target_geo = vam.geometry.TargetGeometry(stlfilename=temp_file_path, resolution=resolution)
 
-        # replace the default file with the variable `temp_file_path`
-        # target_geo = vam.geometry.TargetGeometry(stlfilename="VAMapp/static/a.stl", resolution=resolution)
-        # print("vam.geometry.TargetGeometry done")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================")
-        # num_angles = 360
-        # angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
-        # proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
-        # print("vam.geometry.ProjectionGeometry done")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================")
-        # optimizer_params = vam.optimize.Options(method='PM',n_iter=50,d_h=0.85,d_l=0.6,filter='hamming')
-        # print("vam.optimize.Options done")
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================")
-        # opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
-        # print("=====================================")
-        # print("=====================================")
-        # print("=====================================")
-        # print("Svam.optimize.optimize done")
-        # print(opt_sino.array.shape, opt_recon.array.shape , error.shape)
-        # print("Processing finished")
+            num_angles = 360
+            angles = np.linspace(0, 360 - 360 / num_angles, num_angles)
+            proj_geo = vam.geometry.ProjectionGeometry(angles,ray_type='parallel',CUDA=True)
+            
+            optimizer_params = vam.optimize.Options(method='OSMO',n_iter=75,d_h=0.85,d_l=0.6,filter='hamming')
+            opt_sino, opt_recon, error = vam.optimize.optimize(target_geo, proj_geo,optimizer_params)
 
-        # Clean up the temporary file
-        # os.remove(temp_file_path)
+            opt_sino.save(f"./{id}")
 
-        file_path = os.path.join(settings.BASE_DIR, 'VAMapp', 'static', 'assets', 'target_geo_array.npy')
-        target_geo = np.load(file_path)
+            with open(f"./{id}.sino", 'rb') as f:
+                sino_encoded = base64.b64encode(f.read()).decode('utf-8')
 
-        plt = Plotter(size=(400, 300), bg='black', axes=3)
-        embryo = Volume(target_geo).legosurface(vmin=0.5, vmax=1.5)
-        plt.add(embryo)
+            os.remove(f"./{id}.sino")
 
-        x3d_content = generate_x3d_content(plt, binary=False)
+            sino = opt_sino.array.transpose(1, 0, 2)
+        else:
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.sino') as temp_file:
+                for chunk in file.chunks():
+                    temp_file.write(chunk)
+                temp_file_path = temp_file.name
 
-        print(type(x3d_content))
-        print(x3d_content[41:100])
-        
-        return JsonResponse({"status": "Success", "x3d_content": x3d_content})
+            sino = vam.geometry.loadVolume(file_name=temp_file_path).array.transpose(1, 0, 2)
+
+        images = [""] * sino.shape[0]
+
+        for i in range(sino.shape[0]):
+            # sinoo = ndimage.rotate(sino[i].T,45)
+            # image_array = (sino[i].T * 255).astype(np.uint8)
+            image_array = (sino[i].T * 255).astype(np.uint8)
+            
+            slice = Image.fromarray(image_array)
+
+            enhancer = ImageEnhance.Contrast(slice)
+
+            factor = float(contrast)
+            slice = enhancer.enhance(factor)
+
+            # slice = Image.open('1.jpg', 'r')
+            slice_w, slice_h = slice.size
+            
+            new_width = int(slice_w * resizeFactor)
+
+            wpercent = (new_width / float(slice.size[0]))
+            hsize = int((float(slice.size[1]) * float(wpercent)))
+            slice = slice.resize((new_width, hsize), Image.Resampling.LANCZOS)
+
+            black_img = Image.new(mode="RGB", size=(slice_w, slice_h))
+
+            slice_w, slice_h = slice.size
+
+            black_img_w, black_img_h = black_img.size
+
+            offset = ((black_img_w - slice_w) // 2, (black_img_h - slice_h) // 2)
+
+            black_img.paste(slice, offset)
+
+            buffer = BytesIO()
+            black_img.save(buffer, format="PNG")
+            buffer.seek(0)
+
+            images[i] = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+        return JsonResponse({"status": "Success", "images": images, "sino": sino_encoded})
     else:
         return HttpResponseNotFound('<h1>Page not found</h1>')
-
-def export_window(fileoutput, binary=False, plt=None):
-    try:
-        os.remove("embryo.x3d")
-    except:
-        print("Nothing happens")
-
-    if plt is None:
-        plt = vedo.plotter_instance
-
-    fr = fileoutput.lower()
-    if fr.endswith(".x3d"):
-        #plt.render()
-        exporter = vtki.new("X3DExporter")
-        exporter.SetBinary(binary)
-        exporter.FastestOff()
-        exporter.SetInput(plt.window)
-        exporter.SetFileName(fileoutput)
-        exporter.Update()
-        exporter.Write()
-        
-        wsize = plt.window.GetSize()
-    return plt
 
 # /check_access function to determine if the user is allowed to submit a file
 def check_access(request):
     if request.method == "POST":
         allowed = False
-        CONNECTIONS_ALLOWED = 2
+        CONNECTIONS_ALLOWED = 200000000
 
         user_agent = request.META.get('HTTP_USER_AGENT')
         ip_address = request.META.get('REMOTE_ADDR')
         agent_users = User.objects.filter(user_agent=user_agent)
         ip_users = User.objects.filter(ip_address=ip_address)
 
-        print(user_agent)
-        print(ip_address)
-        print(type(agent_users))
-        print(type(ip_users))
+        # print(user_agent)
+        # print(ip_address)
+        # print(type(agent_users))
+        # print(type(ip_users))
         # print(agent_users)
         # print(ip_users)
         # print(len(agent_users) == 0)
@@ -168,13 +167,13 @@ def check_access(request):
                     user.save()
             if max_connections < CONNECTIONS_ALLOWED: 
                 allowed = True
-            print("======================================")
-            print("======================================")
-            print("======================================")
-            print(">0 ips and 0 agents")
-            print("======================================")
-            print("======================================")
-            print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print(">0 ips and 0 agents")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
         elif len(ip_users) == 0 and len(agent_users) > 0:
             # at least one register of the user's user agent and none of the user's ip address
             max_connections = max([user.n_connections for user in agent_users])
@@ -185,13 +184,13 @@ def check_access(request):
                     user.save()
             if max_connections < CONNECTIONS_ALLOWED: 
                 allowed = True
-            print("======================================")
-            print("======================================")
-            print("======================================")
-            print("0 ips and >0 agents")
-            print("======================================")
-            print("======================================")
-            print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print("0 ips and >0 agents")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
         elif len(ip_users) > 0 and len(agent_users) > 0:
             # at least one register of the user's ip address and the user's user agent
             unique_agent_users = set(agent_users)
@@ -205,20 +204,20 @@ def check_access(request):
                     user.save()
                 if max_connections < CONNECTIONS_ALLOWED:
                     allowed = True
-            print("======================================")
-            print("======================================")
-            print("======================================")
-            print(">0 ips and >0 agents")
-            print("======================================")
-            print("======================================")
-            print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print(">0 ips and >0 agents")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
         elif len(ip_users) == 0 and len(agent_users) == 0:
             # no register of the user's ip address and the user's user agent (create a new register)
             allowed = True
 
             date = timezone.now()
-            print(date)
-            print(type(date))
+            # print(date)
+            # print(type(date))
 
             
             new_obj = User.objects.create(
@@ -230,14 +229,21 @@ def check_access(request):
             new_obj.save()
             
             
-            print("======================================")
-            print("======================================")
-            print("======================================")
-            print("0 ips and 0 agents")
-            print("======================================")
-            print("======================================")
-            print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
+            # print("0 ips and 0 agents")
+            # print("======================================")
+            # print("======================================")
+            # print("======================================")
 
         return JsonResponse({'allowed': allowed})
     else:
         return HttpResponseNotFound('<h1>Page not found</h1>')
+    
+# def get_sino(request):
+#     # Se accede al archivo .sino guardado "permanentemente" antes. Se elimina ese archivo.
+#     response = HttpResponse(open("./hola.sino.sino", "rb"))
+#     response['Content-Disposition'] = f'attachment; filename="algo.sino"'
+#     os.remove("./hola.sino.sino")
+#     return response

@@ -1,11 +1,35 @@
+* {
+    box-sizing: content-box;
+}
+
 body {
-    background-image: url("../assets/IMG_0022.JPG");
+    /* background-image: url("../assets/IMG_0022.JPG"); */
+    /* background-image: url("./IMG_0022.JPG"); */
+    background-color: black;
     margin: 0;
     padding: 0;
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
+    overflow: hidden;
+    /* padding: 10px; */
+}
+
+.main-header {
+    background-color: rgb(56, 55, 55);
+    height: 10svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    padding: 3svh 0;
+    font-size: 1.5svw;
+}
+
+hr {
+    margin: 0;
+    margin-bottom: 2svh;
 }
 
 h1 {
@@ -14,68 +38,247 @@ h1 {
     padding: 20px;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-size: cover;
-    padding: 10px 0;
-}
-
 #header-image1 {
-    width: 200px; /* Adjust the width as needed */
+    width: 33.33%; /* Adjust the width as needed */
     height: auto;
+    max-height: 100%;
+    object-fit: contain;
     margin-right: 25px; /* Add space between the image and header text */
     margin-left: 15px;
 }
 
 #header-image2 {
-    width: 150px; /* Adjust the width as needed */
+    width: 33.33%; /* Adjust the width as needed */
     height: auto;
+    max-height: 100%;
+    object-fit: contain;
     margin-right: 25px; /* Add space between the image and header text */
     margin-left: 15px;
 }
 
-.container {
+main {
+    height: 80svh;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    margin: 25px auto
 }
 
-/* #model-container {
-    margin-top: 5px;
-    width: 400px;
-    height: 400px;
-    background-color: #000;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-} */
+#pika {
+    height: auto;
+    width: 50svw;
+    max-height: 100%;
+    object-fit: contain;
+    border-right: 1px solid white;
+}
 
-button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
+.form-container {
+    height: 80vh;
+    width: 50svw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    background-color: rgb(56, 56, 56);
+    border-radius: 10px;
+    height: 70%;
+    overflow: hidden;
+    width: 60%;
+    font-size: 1.4svw;
+    text-wrap: nowrap;
+    /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
+    box-shadow: 0px 0px 200px rgba(0, 51, 255, 0.5);
+}
+
+.form-header {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: #063FA7;
+    border-bottom: 0.5svh solid #031e4f;
+}
+
+h2 {
+    font-size: 2.0svw;
+}
+
+.selectionTabs {
     background-color: #0074d9;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
+    height: 10%;
+    overflow: hidden;
+    color: white;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+.selectionTabs > label {
+    width: 33.33%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 0.5svh solid;
     cursor: pointer;
 }
 
-#file-upload {
-    margin-top: 20px;
-    color: #fff
+label[for="slicing"] {
+    border-right: 0.2svw solid;
+} 
+
+label[for="advanced"] {
+    border-left: 0.2svw solid;
+} 
+
+input[type="radio"]:checked+label {
+    font-weight: bold;
+    background-color: #063FA7;
+} 
+
+.form-content {
+    text-align: center; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    height: 100%;
+    justify-content: unset;
 }
 
-.x3d-container {
+#file-input {
+    height: 26.667%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+}
+
+input[type="file"] {
+    display: none;
+}
+  
+.custom-file-upload {
+    overflow: hidden;
+    padding: 0.5svh 1svw;
+    font-size: 1.2svw;
+    text-align: center;
+    height: 4svh;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.custom-file-upload:hover {
+    background-color: #cbcbcb;
+    border: 1px solid rgb(74, 74, 74);
+}
+
+.custom-file-upload:active {
+    background-color: #898989;
+    border: 2px solid black;
+}
+
+#ranges {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    /* gap: 2svw; */
+    height: 26.667%;
     width: 100%;
+    /* padding: 0 1.2svw; */
+    /* margin: 0 2.5svw; */
+}
+
+#resolution {
+    width: 50%;
+}
+
+#submit {
+    height: 26.667%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.x3dom-canvas {
-    margin: 0 auto;
+#VoxelButton, #PrintButton {
+    background-color: #0074d9;
+    height: 6svh;
+    width: auto;
+    padding: 0 1.5svw;
+    font-size: 1.4svw;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+}
+
+#VoxelButton:hover {
+    background-color: #015eb0;
+    border: 1px solid gray;
+}
+
+#VoxelButton:active {
+    background-color: #003c70;
+    border: 2px solid black;
+}
+
+#buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media only screen and (max-width: 1020px) and (orientation: portrait) {
+    main {
+        flex-direction: column;
+        gap: 3svh;
+    }
+
+    #pika {
+        height: 45svh;
+        width: auto;
+        max-width: 90svw;
+        object-fit: contain;
+    }
+
+    h2 {
+        font-size: 2.5svw;
+    }
+
+    .form-container {
+        height: 30svh;
+        width: 50svw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    form {
+        font-size: 2svw;
+        height: 30svh;
+        width: 100%;
+    }
+
+    .custom-file-upload {
+        padding: 0.5svh 1svw;
+        font-size: 1.8svw;
+        height: 2svh;
+    }
+
+    #VoxelButton {
+        height: 3.5svh;
+        padding: 0 1.5svw;
+        font-size: 2svw;
+    }
 }
