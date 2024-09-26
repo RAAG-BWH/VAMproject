@@ -28,14 +28,27 @@
         <img id="header-image1" src="./shrike_logo.png" alt="Shrike Zhang Laboratory logo">
     </header>
     <hr>
-    <main>
+    <main style="position: relative;">
         <!-- <x3d width='800px' height='600px'>
             <scene id="threed-scene">
                 <viewpoint position="-1.94639 1.79771 -2.89271" orientation="0.03886 0.99185 0.12133 3.75685"></viewpoint>
                 <Inline url="{% static 'embryo.x3d' %}" />
             </scene>
         </x3d> -->
-        <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model">
+        <article style="height:10svh; display: flex; position: absolute; background-color: rgb(24, 24, 24); top: 0; right: 10%; justify-content: space-around; align-items: center; border-radius: 10px; gap: 10px; padding: 0 10px; border: 1px solid white;">
+            <div style="height: 2svh; width: 2svh; background: radial-gradient(rgb(253, 107, 107) 20%, rgb(137, 0, 0)); border-radius: 50%; border: 1px solid gray; display: inline; box-shadow: rgb(137, 0, 0) 0px 0px 5px 5px;"></div>
+            <!-- radial-gradient(rgb(105, 255, 105) 5%, green) -->
+            <h6 style="color: white;">Paired Device</h6>
+        </article>
+        <article id="img-container">
+            <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model" style="height: 100%;">
+            <!-- <article style="display: grid;">
+                <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model">
+                <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model">
+                <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model">
+                <img id="pika" src="david_rendon_projects.png" alt="Sliced frames of 3D Model">
+            </article> -->
+        </article>    
         <article class="form-container">
             <form id="uploadForm" enctype="multipart/form-data" method="post">
                 <header class="form-header">
@@ -59,14 +72,14 @@
                         <div style="width: 50%;">
                             <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
                                 <span style="color: white; font-weight: bold;">Resolution:</span>
-                                <span style="display: inline-block; color: white; padding-left: 5px;" id="res-value">250</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="res-value" min="0" step="0.1" max="500" value="250">
                             </div>
                             <input type="range" id="resolution" min="10" max="500" style="width: 75%;">
                         </div>
                         <div style="width: 50%;">
                             <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
                                 <span style="color: white; font-weight: bold;">Contrast Factor:</span>
-                                <span style="display: inline-block; color: white; padding-left: 5px;" id="con-value">25</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="con-value" min="0" step="0.1" max="50" value="25">
                             </div>
                             <input type="range" id="contrast" min="1" max="50" style="width: 75%;">
                         </div>
@@ -81,6 +94,7 @@
                         <select id="parameterType">
                             <option value="velocity" selected>Velocity</option>
                             <option value="timePerFrame">Time per frame</option>
+                            <option value="hops">Hops</option>
                         </select>
                         <!-- <p style="margin: 0; color: white;" id="nose">Scale Factor</p> -->                        
                     </article>
@@ -88,32 +102,48 @@
                         <div style="width: 50%;">
                             <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
                                 <span style="color: white; font-weight: bold;">Degrees/s:</span>
-                                <span style="display: inline-block; color: white; padding-left: 5px;" id="vel-value">30</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="vel-value" min="1" step="0.1" max="60" value="30">
                             </div>
                             <input type="range" id="velocity" min="1" max="60" style="width: 75%;">
                         </div>
                         <div style="width: 50%; overflow: hidden;">
                             <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
                                 <span style="color: white; font-weight: bold;">Exposure Time:</span>
-                                <span style="display: inline-block; color: white; padding-left: 5px;" id="exp-value">30</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="exp-value" min="1" step="0.1" max="300" value="150">
                             </div>
-                            <input type="range" id="exposure" min="1" max="60" style="width: 75%;">
+                            <input type="range" id="exposure" min="1" max="300" value="150" step="0.1" style="width: 75%;">
                         </div>
                     </article>
                     <article id="ranges" class="frame" style="display: none;">
                         <div style="width: 50%;">
                             <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
                                 <span style="color: white; font-weight: bold;">Time per frame:</span>
-                                <span style="display: inline-block; color: white; padding-left: 5px;" id="tpf-value">500</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="tpf-value" min="16.67" step="0.1" max="1000" value="500">
                             </div>
                             <input type="range" id="tpf" min="16.67" max="1000" step="0.01" style="width: 75%;" value="500">
                         </div>
                         <div style="width: 50%; overflow: hidden;">
                             <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
                                 <span style="color: white; font-weight: bold;">Rotations:</span>
-                                <span style="display: inline-block; color: white; padding-left: 5px;" id="rot-value">3</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="rot-value" min="1" step="1" max="5" value="3">
                             </div>
                             <input type="range" id="rotations" min="1" max="5" style="width: 75%;" value="3">
+                        </div>
+                    </article>
+                    <article id="ranges" class="hops" style="display: none;">
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Distance:</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="hop-value" min="0.1" step="0.1" max="360" value="60">
+                            </div>
+                            <input type="range" id="hop" min="0.1" max="360" step="0.1" style="width: 75%;" value="60">
+                        </div>
+                        <div style="width: 50%; overflow: hidden;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Exposition:</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="hopDelay-value" min="0.01" step="0.01" max="60" value="5">
+                            </div>
+                            <input type="range" id="hopDelay" min="0.01" max="60" style="width: 75%;" value="5">
                         </div>
                     </article>
                     <article id="submit">
@@ -121,13 +151,49 @@
                     </article>
                 </article>
                 <article class="form-content third">
-                    <article id="file-input">
-                        <p style="margin: 0; color: white;" id="nose">Image Scaling Factor</p>
-                        <input type="number" max="1" min="0.1" step="0.1" id="resize" value="1"/>
+                    <br>
+                    <article id="ranges" class="vel" style="position: relative; z-index: 99;">
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Image Scale:</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="scale-value" min="0" step="1" max="100" value="100">
+                            </div>
+                            <input type="range" id="resize" min="0" max="100" value="100" style="width: 75%;">
+                        </div>
+                        <div style="width: 50%; overflow: hidden;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Rotate Image:</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="rot" min="0" step="0.1" max="360" value="0">
+                            </div>
+                            <input type="range" id="rotate" min="0" step="0.1" max="360" value="0" style="width: 75%;">
+                        </div>
                     </article>
+                    <br>
+                    <article id="ranges" class="vel">
+                        <div style="width: 50%;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Translate X:</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="trans-x" min="-100" step="0.1" max="100" value="0">
+                            </div>
+                            <input type="range" id="transx" min="0" max="100" step="0.1" value="0" style="width: 75%;">
+                        </div>
+                        <div style="width: 50%; overflow: hidden;">
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <span style="color: white; font-weight: bold;">Translate Y:</span>
+                                <input type="number" class="labelI" style="display: inline-block; color: white; padding-left: 5px;" id="trans-y" min="-100" step="0.1" max="100" value="0">
+                            </div>
+                            <input type="range" id="transy" min="0" step="0.1" max="100" value="0" style="width: 75%;">
+                        </div>
+                    </article>
+                    <br>
                     <article id="buttons">
+                        <button id="reset">Reset</button>
+                        <br>
+                        <button id="window">Use Second Monitor</button>
+                        <br>
                         <button id="download">Download Sinogram</button><br>
-                        <button id="VoxelButton">Apply</button>
+                        <!-- <button id="VoxelButton">Apply</button> -->
+                        <br>
                     </article>
                 </article>
                 <!-- {{ form.captcha }} -->

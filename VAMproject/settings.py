@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = ["192.168.1.222", "127.0.0.1", "10.0.0.41", "192.168.200.79", "10.246.79.2"]
+ALLOWED_HOSTS = ["*"]#["192.168.1.222", "127.0.0.1", "10.0.0.41", "192.168.200.79", "10.246.79.2", "10.247.63.211", "10.247.80.160"]
 
 # Application definition
 
@@ -40,12 +40,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_crontab",
+    "django_extensions",
     "VAMapp",
     "captcha",
 ]
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
+    # "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",

@@ -3,8 +3,6 @@
 }
 
 body {
-    /* background-image: url("../assets/IMG_0022.JPG"); */
-    /* background-image: url("./IMG_0022.JPG"); */
     background-color: black;
     margin: 0;
     padding: 0;
@@ -13,10 +11,11 @@ body {
     background-attachment: fixed;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    /* padding: 10px; */
 }
 
 .main-header {
+    position: relative;
+    z-index: 99;
     background-color: rgb(56, 55, 55);
     height: 10svh;
     display: flex;
@@ -30,6 +29,8 @@ body {
 hr {
     margin: 0;
     margin-bottom: 2svh;
+    z-index: 100;
+    position: relative;
 }
 
 h1 {
@@ -63,16 +64,33 @@ main {
     align-items: center;
 }
 
-#pika {
-    height: auto;
+#img-container {
+    /* z-index: -1; */
+    height: 100%;
     width: 50svw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#pika {
+    position: absolute;
+    z-index: 1;
+    background-color: transparent;
+    height: auto;
+    /* width: 100%; */
+    /* right: 0%; */
+    /* translate: -50vw; */
+    /* left: 100%; */
     box-sizing: border-box;
     max-height: 100%;
     object-fit: contain;
-    border-right: 1px solid white;
 }
 
 .form-container {
+    position: relative;
+    z-index: 99;
     height: 80vh;
     width: 50svw;
     display: flex;
@@ -163,8 +181,12 @@ input[type="radio"]:checked+label {
 input[type="file"] {
     display: none;
 }
-  
-.custom-file-upload {
+
+button {
+    box-sizing: border-box;
+}
+
+.custom-file-upload, #bluetooth, #reset, #download, #window {
     overflow: hidden;
     padding: 0.5svh 1svw;
     font-size: 1.2svw;
@@ -177,12 +199,12 @@ input[type="file"] {
     cursor: pointer;
 }
 
-.custom-file-upload:hover {
+.custom-file-upload:hover, #bluetooth:hover, #reset:hover, #download:hover {
     background-color: #cbcbcb;
     border: 1px solid rgb(74, 74, 74);
 }
 
-.custom-file-upload:active {
+.custom-file-upload:active, #bluetooth:active, #reset:active, #download:active {
     background-color: #898989;
     border: 2px solid black;
 }
@@ -215,9 +237,10 @@ input[type="file"] {
     height: 6svh;
     width: auto;
     padding: 0 1.5svw;
-    font-size: 1.4svw;
+    /* font-size: 2.5svw; */
     color: #fff;
     border-radius: 5px;
+    font-weight: bolder;
     cursor: pointer;
     border: none;
 }
@@ -239,10 +262,88 @@ input[type="file"] {
     align-items: center;
 }
 
+.form-content.third {
+    max-height: 80%;
+    margin-bottom: 15svh;
+    scrollbar-width: thin;
+    scrollbar-color: black transparent;
+    overflow-y: scroll;
+}
+
+.labelI {
+    background-color: transparent;
+    width: 2.5svw;
+    font-weight: bold;
+    font-size: 1.2svw;
+    /* font-size: large; */
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* #bluetooth {
+    overflow: hidden;
+    padding: 0.5svh 1svw;
+    font-size: 1.2svw;
+    text-align: center;
+    height: 4svh;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    display: inline-block;
+    cursor: pointer;
+} */
+
+select {
+    overflow: hidden;
+    padding: 0.25svh 0.5svw;
+    font-size: 0.8svw;
+    text-align: center;
+    height: 2.5svh;
+    border: none;
+    background-color: #ffffff;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* #reset, #download {
+    overflow: hidden;
+    padding: 0.25svh 0.5svw;
+    font-size: 0.8svw;
+    text-align: center;
+    height: 2.5svh;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    display: inline-block;
+    cursor: pointer;
+} */
+
 @media only screen and (max-width: 1020px) and (orientation: portrait) {
+    body {
+        width: 100svw;
+        height: 100svh;
+        overflow: hidden;
+    }
+    
     main {
         flex-direction: column;
         gap: 3svh;
+        overflow: hidden;
+        /* overflow-x: hidden; */ 
+    }
+
+    #img-container {
+        height: 40svh;
+        width: 100svw;
     }
 
     #pika {
@@ -266,20 +367,66 @@ input[type="file"] {
     }
     
     form {
-        font-size: 2svw;
+        font-size: 2.5svw;
         height: 35svh;
         width: 100%;
     }
 
-    .custom-file-upload {
+    .custom-file-upload, #bluetooth, #reset, #download {
         padding: 0.5svh 1svw;
-        font-size: 2svw;
+        font-size: 2.5svw;
         height: 2svh;
     }
 
-    #VoxelButton {
+    #VoxelButton, #PrintButton {
         height: 3.5svh;
-        padding: 0 1.5svw;
-        font-size: 2svw;
+        padding: 0 5.5svw;
+        font-size: 2.5svw;
+    }
+
+    .labelI {
+        background-color: transparent;
+        width: 5svw;
+        font-weight: bold;
+        font-size: 2.5svw;
+        /* font-size: large; */
+    }
+
+    /* #reset, #download {
+        overflow: hidden;
+        padding: 0 2.5svw;
+        font-size: 2.5svw;
+        text-align: center;
+        height: 2.5svh;
+        border: 1px solid black;
+        border-radius: 5px;
+        background-color: #ffffff;
+        display: inline-block;
+        cursor: pointer;
+    } */
+
+    select {
+        overflow: hidden;
+        padding: 0.25svh 0.5svw;
+        font-size: 2.5svw;
+        text-align: center;
+        height: 2.5svh;
+        border: none;
+        background-color: #ffffff;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .custom-file-upload, #bluetooth, #reset, #download {
+        overflow: hidden;
+        padding: 0.75svh 2svw;
+        font-size: 2.5svw;
+        text-align: center;
+        height: fit-content;
+        border: none;
+        border-radius: 5px;
+        background-color: #ffffff;
+        display: inline-block;
+        cursor: pointer;
     }
 }
